@@ -35,7 +35,7 @@ class SpentTimeController < ApplicationController
     another_user = User.find(params[:user])
     @same_user = (@user.id == another_user.id)
     respond_to do |format|
-      format.html { render :partial => 'report'}
+      format.js
     end
   end
 
@@ -94,23 +94,11 @@ class SpentTimeController < ApplicationController
 
   # Update the project's issues when another project is selected
   def update_project_issues
+    @to = params[:to].to_date
+    @from = params[:from].to_date
     find_assigned_issues_by_project(params[:project_id])
-    render :update do |page|
-      page.replace_html "fields_for_new_entry_form", :partial => "fields_for_new_entry_form"
-    end
-  end
-
-  # Update the users' combobox after changing the project
-  def update_users_select
-    if Project.exists?(params[:value])
-      project = Project.find(params[:value])
-      @users = project.users
-    else
-      @users = User.find(:all, :conditions => ["status = 1"])
-    end
-
-    render :update do |page|
-      page.replace_html "people_select", :partial => "people_select"
+    respond_to do |format|
+      format.js
     end
   end
 end
